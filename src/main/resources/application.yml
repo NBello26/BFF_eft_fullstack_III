@@ -1,0 +1,37 @@
+server:
+  port: ${SERVER_PORT:8087}
+
+jwt:
+  secret: "MiClaveSuperSecretaParaMascotas123456789!"
+
+spring:
+  application:
+    name: ms-bff
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+
+services:
+  mascotas:
+    url: ${SERVICES_MASCOTAS_URL:http://localhost:8081}
+  geolocalizacion:
+    url: ${SERVICES_GEOLOCALIZACION_URL:http://localhost:8083}
+  coincidencias:
+    url: ${SERVICES_COINCIDENCIAS_URL:http://localhost:8084}
+  usuarios:
+    url: ${SERVICES_USUARIOS_URL:http://localhost:8085}
+  notificaciones:
+    url: ${SERVICES_NOTIFICACIONES_URL:http://localhost:8086}
+
+# CONFIGURACIÓN DE SWAGGER / OPENAPI
+springdoc:
+  show-actuator: true
+  swagger-ui:
+    use-root-path: true
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    tags-sorter: alpha
+  api-docs:
+    path: /api/v1/web/v3/api-docs
