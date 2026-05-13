@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "ms-motor-coincidencias", url = "${services.coincidencias.url}")
+@FeignClient(name = "ms-motor-coincidencias")
 public interface CoincidenciasClient {
 
     @GetMapping("/api/coincidencias/buscar/{id}")

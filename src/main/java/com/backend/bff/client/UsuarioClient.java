@@ -7,7 +7,7 @@ import com.backend.bff.dto.UsuarioDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "ms-usuarios", url = "${services.usuarios.url}")
+@FeignClient(name = "ms-usuarios")
 public interface UsuarioClient {
 
     @GetMapping("/api/usuarios/{id}")
