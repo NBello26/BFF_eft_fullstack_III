@@ -42,18 +42,7 @@ jobs:
                 "docker rm ms-bff || true",
                 "TOKEN=$(curl -s -X PUT \"http://169.254.169.254/latest/api/token\" -H \"X-aws-ec2-metadata-token-ttl-seconds: 21600\")",
                 "export EC2_IP=$(curl -s -H \"X-aws-ec2-metadata-token: $TOKEN\" http://169.254.169.254/latest/meta-data/local-ipv4)",
-                "docker run -d --name ms-bff -p 8087:8087 \
-                  -e JAVA_OPTS=\"-Xmx250m\" --memory=\"350m\" \
-                  -e ALLOWED_CORS_ORIGIN=\"http://${{ secrets.FRONTEND_PUBLIC_IP }}\" \
-                  -e EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=\"${{ secrets.EUREKA_URL }}\" \
-                  -e EUREKA_INSTANCE_PREFER_IP_ADDRESS=\"true\" \
-                  -e EUREKA_INSTANCE_IP_ADDRESS=\"$EC2_IP\" \
-                  -e SERVICES_MASCOTAS_URL=\"http://MS-MASCOTA\" \
-                  -e SERVICES_GEOLOCALIZACION_URL=\"http://MS-GEOLOCALIZACION\" \
-                  -e SERVICES_COINCIDENCIAS_URL=\"http://MS-COINCIDENCIAS\" \
-                  -e SERVICES_USUARIOS_URL=\"http://MS-USUARIOS\" \
-                  -e SERVICES_NOTIFICACIONES_URL=\"http://MS-NOTIFICACIONES\" \
-                  ${{ secrets.ECR_REPO_URL_BFF }}:latest"
+                "docker run -d --name ms-bff -p 8087:8087 -e JAVA_OPTS=\"-Xmx250m\" --memory=\"350m\" -e ALLOWED_CORS_ORIGIN=\"http://${{ secrets.FRONTEND_PUBLIC_IP }}\" -e EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=\"${{ secrets.EUREKA_URL }}\" -e EUREKA_INSTANCE_PREFER_IP_ADDRESS=\"true\" -e EUREKA_INSTANCE_IP_ADDRESS=\"$EC2_IP\" -e SERVICES_MASCOTAS_URL=\"http://MS-MASCOTA\" -e SERVICES_GEOLOCALIZACION_URL=\"http://MS-GEOLOCALIZACION\" -e SERVICES_COINCIDENCIAS_URL=\"http://MS-COINCIDENCIAS\" -e SERVICES_USUARIOS_URL=\"http://MS-USUARIOS\" -e SERVICES_NOTIFICACIONES_URL=\"http://MS-NOTIFICACIONES\" ${{ secrets.ECR_REPO_URL_BFF }}:latest"
               ]
             }' \
             --query "Command.CommandId" \
