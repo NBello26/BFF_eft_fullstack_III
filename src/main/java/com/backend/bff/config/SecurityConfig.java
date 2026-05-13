@@ -60,11 +60,17 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // Inyectamos la URL desde una variable de entorno
+    @Value("${ALLOWED_CORS_ORIGIN:http://localhost:5173}")
+    private String allowedOrigin;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        // Se agregó PATCH y se asegura de que OPTIONS esté permitido
+        
+        // Usamos la variable inyectada
+        configuration.setAllowedOrigins(List.of(allowedOrigin));
+        
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
