@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 // Usamos el nombre que definimos en Eureka/Docker
-@FeignClient(name = "ms-gestion-mascotas")
+@FeignClient(name = "ms-gestion-mascotas", url = "${services.mascotas.url}")
 public interface MascotasClient {
 
     @GetMapping("/api/mascotas/{id}")

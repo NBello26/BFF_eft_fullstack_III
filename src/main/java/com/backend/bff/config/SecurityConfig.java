@@ -1,6 +1,8 @@
 package com.backend.bff.config;
 
-import com.backend.bff.security.SessionAuthFilter;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +15,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Arrays;
-import java.util.List;
+import com.backend.bff.security.SessionAuthFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -46,6 +46,9 @@ public class SecurityConfig {
                                 "/webjars/**"
                         ).permitAll()
 
+                        // 1. PERMITIR ACTUATOR SIN AUTENTICACIÓN:
+                        .requestMatchers("/actuator/health").permitAll()
+
                         // 3. Rutas públicas
                         .requestMatchers("/api/v1/auth/login").permitAll()
                         .requestMatchers("/api/v1/auth/registro").permitAll()
@@ -53,7 +56,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/web/mascotas/**").permitAll()
                         .requestMatchers("/api/v1/web/usuarios/registro").permitAll()
 
-                        // 4. Rutas protegidas
+                        // 4. 🔒 RUTAS EXCLUSIVAS DE ADMINISTRADOR
+                        // Cualquier ruta que empiece con /admin/ requiere obligatoriamente el rol ADMIN
+                        .requestMatchers("/api/v1/web/admin/**").hasRole("ADMIN")
+
+                        // 5. Rutas protegidas genéricas (Para Clientes y Admins)
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(sessionAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -61,17 +68,11 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Inyectamos la URL desde una variable de entorno
-    @Value("${ALLOWED_CORS_ORIGIN:http://localhost:5173}")
-    private String allowedOrigin;
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        // Usamos la variable inyectada
-        configuration.setAllowedOrigins(List.of(allowedOrigin));
-        
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        // Se agregó PATCH y se asegura de que OPTIONS esté permitido
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

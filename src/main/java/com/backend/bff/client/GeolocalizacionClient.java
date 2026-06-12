@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "ms-geolocalizacion")
+@FeignClient(name = "ms-geolocalizacion", url = "${services.geolocalizacion.url}")
 public interface GeolocalizacionClient {
 
     // Este es el que usaremos para el agregado o.O
