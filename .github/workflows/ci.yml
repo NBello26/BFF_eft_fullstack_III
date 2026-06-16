@@ -14,23 +14,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    
+    # 1. Autenticación en AWS
     - uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
         aws-region: ${{ env.AWS_REGION }}
+        
+    # 2. Login en ECR
     - id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
+      
+    # 3. Build y Push de la imagen Docker del BFF
     - env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }} 
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        
+    # 4. Conexión al clúster de EKS
     - run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+    
+    # 5. Despliegue en Kubernetes (Infraestructura -> Aplicación)
     - env:
         IMAGE_TAG: ${{ github.sha }}
       run: |
+        # A. Aseguramos que Redis esté corriendo antes que el microservicio
+        kubectl apply -f k8s/redis.yml
+        
+        # B. Actualizamos la imagen del BFF y lo desplegamos
         sed -i "s|\\\${IMAGE_TAG}|$IMAGE_TAG|g" k8s/bff.yml
         kubectl apply -f k8s/bff.yml
